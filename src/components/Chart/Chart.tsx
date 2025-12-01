@@ -1,4 +1,12 @@
-import { useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from 'react';
+import {
+  useState,
+  useRef,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useEffect,
+} from 'react';
 import {
   LineChart,
   XAxis,
@@ -31,7 +39,21 @@ export interface ChartHandle {
 
 export const Chart = forwardRef<ChartHandle, ChartProps>(
   ({ data, selectedVariations, chartData, lineStyle, theme, yAxisDomain, timeRange }, ref) => {
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
     const chartRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      const mediaQuery = window.matchMedia('(max-width: 670px)');
+
+      const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+        setIsSmallScreen(e.matches);
+      };
+
+      handleChange(mediaQuery);
+      mediaQuery.addEventListener('change', handleChange);
+
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
 
     const exportToPNG = useCallback(async () => {
       if (!chartRef.current) return;
@@ -79,10 +101,17 @@ export const Chart = forwardRef<ChartHandle, ChartProps>(
       );
     }, [selectedVariations, lineStyle, chartData]);
 
+    const chartMargin = useMemo(() => {
+      if (isSmallScreen) {
+        return { top: 20, right: 40, left: 10, bottom: 70 };
+      }
+      return { top: 20, right: 100, left: 80, bottom: 70 };
+    }, [isSmallScreen]);
+
     return (
       <div ref={chartRef} className={styles.chartContainer}>
         <ResponsiveContainer width="100%" height="100%">
-          <ChartComponent data={data} margin={{ top: 20, right: 100, left: 80, bottom: 70 }}>
+          <ChartComponent data={data} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor(theme, '#444', '#e0e0e0')} />
             <XAxis
               dataKey="date"

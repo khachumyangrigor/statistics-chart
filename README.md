@@ -24,6 +24,11 @@ Interactive Line Chart для визуализации результатов A/
 - ✅ **Light / Dark theme toggle** - переключение между светлой и темной темой
 - ✅ **Export chart to PNG** - экспорт графика в PNG формат
 
+## Доступен для просмотра
+
+- https://khachumyangrigor.github.io/statistics-chart/
+
+
 ## Local Setup Instructions
 
 ### Предварительные требования:
