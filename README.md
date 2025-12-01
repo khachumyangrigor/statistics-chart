@@ -34,7 +34,7 @@ Interactive Line Chart для визуализации результатов A/
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/[YOUR_USERNAME]/statistics-chart.git
+git clone https://github.com/khachumyangrigor/statistics-chart
 cd statistics-chart
 ```
 
@@ -48,7 +48,7 @@ npm install
 npm run dev
 ```
 
-Приложение будет доступно по адресу `http://localhost:5173`
+Приложение будет доступно по адресу `http://localhost:5173/statistics-chart`
 
 4. Сборка для production:
 ```bash

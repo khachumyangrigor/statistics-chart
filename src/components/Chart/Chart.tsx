@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from 'react';
+import { useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from 'react';
 import {
   LineChart,
   XAxis,
@@ -7,17 +7,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   ComposedChart,
-  ReferenceLine,
   Brush,
 } from 'recharts';
-import {
-  ProcessedDataPoint,
-  LineStyle,
-  ChartData,
-  ChartMouseEvent,
-  Theme,
-  TimeRange,
-} from '../../types';
+import { ProcessedDataPoint, LineStyle, ChartData, Theme, TimeRange } from '../../types';
 import styles from './Chart.module.css';
 import { CustomTooltip } from './components';
 import { renderLine } from './utils/renderLine';
@@ -39,43 +31,34 @@ export interface ChartHandle {
 
 export const Chart = forwardRef<ChartHandle, ChartProps>(
   ({ data, selectedVariations, chartData, lineStyle, theme, yAxisDomain, timeRange }, ref) => {
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const chartRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = useCallback((state: ChartMouseEvent | null) => {
-      if (state && state.activeTooltipIndex !== undefined) {
-        setHoveredIndex(state.activeTooltipIndex);
-      }
-    }, []);
-
-    const handleMouseLeave = useCallback(() => {
-      setHoveredIndex(null);
-    }, []);
+    const chartRef = useRef<HTMLDivElement | null>(null);
 
     const exportToPNG = useCallback(async () => {
       if (!chartRef.current) return;
 
       try {
         const html2canvas = (await import('html2canvas')).default;
-        const canvas = await html2canvas(chartRef.current, {
-          backgroundColor: getThemeColor(theme, '#1a1a1a', '#ffffff'),
-          scale: 2,
-          logging: false,
-          useCORS: true,
-          allowTaint: true,
-          width: chartRef.current.scrollWidth,
-          height: chartRef.current.scrollHeight,
-        });
+        if (chartRef.current) {
+          const canvas = await html2canvas(chartRef.current!, {
+            backgroundColor: getThemeColor(theme, '#1a1a1a', '#ffffff'),
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            width: chartRef.current?.scrollWidth,
+            height: chartRef.current?.scrollHeight,
+          });
 
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const link = document.createElement('a');
-            link.download = 'chart.png';
-            link.href = URL.createObjectURL(blob);
-            link.click();
-            URL.revokeObjectURL(link.href);
-          }
-        });
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const link = document.createElement('a');
+              link.download = 'chart.png';
+              link.href = URL.createObjectURL(blob);
+              link.click();
+              URL.revokeObjectURL(link.href);
+            }
+          });
+        }
       } catch (error) {
         console.error('Error exporting chart:', error);
         alert('Failed to export chart. Please try again.');
@@ -99,12 +82,7 @@ export const Chart = forwardRef<ChartHandle, ChartProps>(
     return (
       <div ref={chartRef} className={styles.chartContainer}>
         <ResponsiveContainer width="100%" height="100%">
-          <ChartComponent
-            data={data}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            margin={{ top: 20, right: 100, left: 80, bottom: 70 }}
-          >
+          <ChartComponent data={data} margin={{ top: 20, right: 100, left: 80, bottom: 70 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor(theme, '#444', '#e0e0e0')} />
             <XAxis
               dataKey="date"
@@ -130,14 +108,6 @@ export const Chart = forwardRef<ChartHandle, ChartProps>(
             />
 
             <Tooltip content={<CustomTooltip />} />
-
-            {hoveredIndex !== null && data[hoveredIndex] && (
-              <ReferenceLine
-                x={data[hoveredIndex].date}
-                stroke={getThemeColor(theme, '#666', '#999')}
-                strokeDasharray="3 3"
-              />
-            )}
 
             {lines}
 
