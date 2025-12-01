@@ -1,0 +1,35 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.controlsLeft {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  flex: 1;
+}
+
+.controlsRight {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+@media (min-width: 671px) and (max-width: 1300px) {
+  .controls {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .controlsLeft {
+    gap: 24px;
+  }
+}
